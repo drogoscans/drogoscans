@@ -1,0 +1,203 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   Int                  @id @default(autoincrement())
+  email                String               @unique
+  password             String?
+  googleAuthId         String?              @unique
+  role                 Role                 @default(USER)
+  bookmarks            Bookmark[]
+  viewHistories        MangaViewHistory[]
+  chapterReadHistories ChapterReadHistory[] // Relasi ke riwayat chapter yang dibaca
+  tweets               Tweet[]
+  comments             Comment[]
+  notifications        Notification[]
+  blogs                Blog[]
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+}
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  mangaId   Int
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  manga Manga @relation(fields: [mangaId], references: [id])
+}
+
+model Manga {
+  id              Int                @id @default(autoincrement())
+  title           String
+  slug            String
+  cover           String
+  status          Status
+  type            Type
+  views           Int                @default(0)
+  rating          Float              @default(0)
+  updatedAt       DateTime           @updatedAt
+  createdAt       DateTime           @default(now())
+  bookmarks       Bookmark[]
+  recommendations Recommendation[]
+  genres          MangaGenre[]
+  viewHistories   MangaViewHistory[]
+  chapters        Chapter[] // Relasi ke Chapter
+  Notification    Notification[]
+}
+
+model Genre {
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  slug      String
+  updatedAt DateTime     @updatedAt
+  createdAt DateTime     @default(now())
+  mangas    MangaGenre[]
+}
+
+model MangaGenre {
+  id      Int @id @default(autoincrement())
+  mangaId Int
+  genreId Int
+
+  manga Manga @relation(fields: [mangaId], references: [id])
+  genre Genre @relation(fields: [genreId], references: [id])
+
+  @@unique([mangaId, genreId])
+}
+
+model MangaViewHistory {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  mangaId  Int
+  viewedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id])
+  manga Manga @relation(fields: [mangaId], references: [id])
+}
+
+model Chapter {
+  id        Int             @id @default(autoincrement())
+  mangaId   Int
+  title     String
+  number    Int
+  images    ChapterImages[]
+  createdAt DateTime        @default(now())
+
+  manga         Manga                @relation(fields: [mangaId], references: [id])
+  readHistories ChapterReadHistory[]
+}
+
+model ChapterImages {
+  id        Int      @id @default(autoincrement())
+  chapterId Int
+  images    String
+  number    Int      @unique
+  createdAt DateTime @default(now())
+
+  chapter Chapter @relation(fields: [chapterId], references: [id])
+}
+
+model ChapterReadHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  chapterId Int
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  chapter Chapter @relation(fields: [chapterId], references: [id])
+}
+
+model Recommendation {
+  id        Int      @id @default(autoincrement())
+  mangaId   Int
+  createdAt DateTime @default(now())
+
+  manga Manga @relation(fields: [mangaId], references: [id])
+}
+
+model Tweet {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  content   String
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  tweetId   Int?
+  blogId    Int?
+  content   String
+  createdAt DateTime @default(now())
+
+  user         User           @relation(fields: [userId], references: [id])
+  tweet        Tweet?         @relation(fields: [tweetId], references: [id])
+  blog         Blog?          @relation(fields: [blogId], references: [id])
+  Notification Notification[]
+}
+
+model Blog {
+  id        Int       @id @default(autoincrement())
+  userId    Int
+  title     String
+  content   String
+  image     String
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  type      NotificationType
+  content   String
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  commentId Int?
+  mangaId   Int?
+
+  user    User     @relation(fields: [userId], references: [id])
+  comment Comment? @relation(fields: [commentId], references: [id])
+  manga   Manga?   @relation(fields: [mangaId], references: [id])
+}
+
+enum Status {
+  ONGOING
+  COMPLETED
+}
+
+enum Type {
+  MANHWA
+  MANGA
+  MANHUA
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum NotificationType {
+  COMMENT
+  MANGA_UPDATE
+}

@@ -1,6 +1,12 @@
+'use client'
+import { testingDoang } from "@/lib/users/user.action";
 import Image from "next/image";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    testingDoang()
+  }, [])
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
