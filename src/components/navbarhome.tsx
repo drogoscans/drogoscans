@@ -21,7 +21,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2 hover:text-[#ed1c24] transition duration-300 cursor-pointer group"> {/* Group for combined hover effects */}
             {/* Logo */}
             <div className="relative w-12 h-12 group-hover:scale-125 transform transition-transform duration-300"> {/* Added animation effects */}
-              <Image src="/logo.png" alt="logo" layout="fill" objectFit="contain" />
+              <Image src="/logo2.png" alt="logo" layout="fill" objectFit="contain" />
             </div>
             {/* Brand Name */}
             <span className="text-[#ed1c24] text-2xl font-extrabold tracking-tight hidden lg:block group-hover:text-white transition-colors duration-300" style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif' }}>
