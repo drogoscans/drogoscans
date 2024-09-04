@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="flex justify-center items-center py-2 px-4 bg-[#062985] shadow-md">
+    <nav className="flex justify-center items-center py-2 px-4 bg-[#000319] shadow-md">
       <div className="flex items-center justify-between w-full max-w-screen-xl">
         {/* Left Side: Logo and Brand Name in a Single Division */}
         <Link href="/" passHref>

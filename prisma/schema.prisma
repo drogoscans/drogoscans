@@ -19,6 +19,7 @@ model User {
   password             String?
   googleAuthId         String?              @unique
   role                 Role                 @default(USER)
+  image                String?
   bookmarks            Bookmark[]
   viewHistories        MangaViewHistory[]
   chapterReadHistories ChapterReadHistory[] // Relasi ke riwayat chapter yang dibaca
