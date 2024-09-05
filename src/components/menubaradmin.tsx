@@ -6,7 +6,7 @@ import { FaUser, FaBookOpen, FaComments, FaBlog, FaThumbsUp, FaTags, FaBell, FaC
 
 const MenuBar: React.FC = () => {
   return (
-    <div className="flex flex-col w-64 bg-[#062985] h-screen p-6 fixed left-0 top-0 shadow-lg">
+    <div className="flex flex-col w-64 bg-[#000319] h-screen p-6 fixed left-0 top-0 shadow-lg">
       {/* Sidebar Content */}
       <div className="flex flex-col space-y-6">
         {/* Logo and Brand Name */}
