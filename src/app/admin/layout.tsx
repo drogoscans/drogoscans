@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`bg-black min-h-screen antialiased ${inter.className}`}>
+      <body className={`bg-[#0f1431] min-h-screen antialiased ${inter.className}`}>
         {/* Navbar Component */}
         <header className="sticky top-0 z-50 shadow-md items-center">
           <NavbarAdmin />
@@ -34,7 +34,7 @@ export default function RootLayout({
           </aside>
 
           {/* Main Content Area */}
-          <main className="flex-1 p-6 lg:ml-64"> {/* Offset main content for sidebar */}
+          <main className="flex-1 p-6 lg:ml-64 text-white"> {/* Offset main content for sidebar */}
             {children}
           </main>
         </div>
