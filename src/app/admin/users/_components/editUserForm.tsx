@@ -28,9 +28,10 @@ const EditUserForm = ({
 }) => {
   const [formData, setFormData] = useState({
     email: user?.email || "",
+    username: user?.username || "", // Add username field
     role: user?.role || Role.USER,
   });
-  const [isOpen, setIsOpen] = useState(false); // State untuk mengontrol dialog
+  const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -44,7 +45,7 @@ const EditUserForm = ({
     e.preventDefault();
     try {
       await onSubmit(formData);
-      setIsOpen(false); // Tutup dialog setelah berhasil
+      setIsOpen(false);
       toast({
         variant: "default",
         title: "Success",
@@ -62,7 +63,7 @@ const EditUserForm = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="default" size="default" onClick={() => setIsOpen(true)}>
+        <Button variant="secondary" size="default" onClick={() => setIsOpen(true)}>
           Edit User
         </Button>
       </DialogTrigger>
@@ -82,6 +83,17 @@ const EditUserForm = ({
               className="input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="Enter user's email"
               required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="Enter username"
             />
           </div>
           <div>
