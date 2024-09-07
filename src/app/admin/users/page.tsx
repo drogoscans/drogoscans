@@ -1,146 +1,180 @@
-'use client';
+"use client";
 
-import React, { useState, useTransition, useEffect } from 'react';
-import { createUser, deleteUser, getAllUsers, updateUser } from '@/lib/users/user.action';
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import CreateUserForm from './_components/createUserForm';
-import EditUserForm from './_components/editUserForm';
-import DeleteUserDialog from './_components/deleteUserDialog'; // Import DeleteUserDialog
-import { useToast } from "@/hooks/use-toast"; // Import useToast hook
-import { Toaster } from '@/components/ui/toaster';
+import React, { useState, useTransition, useEffect } from "react";
+import { createUser, deleteUser, getAllUsers, updateUser } from "@/lib/users/user.action";
+import CreateUserForm from "./_components/createUserForm";
+import EditUserForm from "./_components/editUserForm";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+import SearchBar from "@/components/searchBar";
+import UserTable from "./_components/userTable";
+import UserPagination from "./_components/userPagination";
+import { Role } from "@prisma/client";
+import { User } from "@/types";
 
 const UsersPage = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast(); // Destructure toast from useToast
+  const [roleFilter, setRoleFilter] = useState<Role | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const perPage = 12; // Define the number of items per page
+  const { toast } = useToast();
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers(currentPage);
+  }, [roleFilter, searchTerm, currentPage]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page: number = 1, perPage: number = 12) => {
     try {
       startTransition(async () => {
-        const allUsers = await getAllUsers();
-        setUsers(allUsers);
+        const response = await getAllUsers(page, perPage, { role: roleFilter }, searchTerm);
+
+        setUsers(
+          response.users.map((user) => ({
+            ...user,
+            username: user.username || '', 
+            contactEmail: user.contactEmail || '',
+            password: user.password || '',
+          }))
+        );
+        setTotalPages(Math.ceil(response.totalUsers / perPage));
       });
-    } catch (err: any) {
-      setError(err.message);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to fetch users.",
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to fetch users.",
+        });
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   };
 
-  const handleCreateUser = async (data: any) => {
+  const handleCreateUser = async (data: User) => {
+    const userData = {
+      ...data,
+      password: data.password || undefined,
+    };
     try {
-      await createUser(data);
-      fetchUsers(); // Refresh user list after creation
+      await createUser(userData);
+      fetchUsers();
       toast({
         variant: "default",
         title: "Success",
         description: "User created successfully.",
       });
-    } catch (err: any) {
-      setError(err.message);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to create user.",
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to create user.",
+        });
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   };
 
-  const handleEditUser = async (userId: number, data: any) => {
+  const handleEditUser = async (userId: string, data: Partial<User>) => {
+    const userData = {
+      ...data,
+      password: data.password || undefined,
+    };
     try {
-      await updateUser(userId, data);
-      fetchUsers(); // Refresh user list after update
+      await updateUser(userId, userData);
+      fetchUsers();
       toast({
         variant: "default",
         title: "Success",
         description: "User updated successfully.",
       });
-    } catch (err: any) {
-      setError(err.message);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update user.",
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to update user.",
+        });
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   };
 
-  const handleDeleteUser = async (userId: number) => {
+  const handleDeleteUser = async (userId: string) => {
     try {
       await deleteUser(userId);
-      fetchUsers(); // Refresh user list after deletion
+      fetchUsers();
       toast({
         variant: "default",
         title: "Success",
         description: "User deleted successfully.",
       });
-    } catch (err: any) {
-      setError(err.message);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to delete user.",
-      });
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to delete user.",
+        });
+      } else {
+        setError("An unknown error occurred.");
+      }
+    }
+  };
+
+  const handleFilter = (filters: string[]) => {
+    const selectedRole = filters.find((filter) => filter !== "All categories") as Role;
+    setRoleFilter(selectedRole || undefined);
+    setCurrentPage(1);
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
     }
   };
 
   return (
     <div>
-      <h1 className='flex text-xl text-center font-bold justify-center mb-8'>User Management</h1>
+      <h1 className="flex text-xl text-center font-bold justify-center mb-8">User Management</h1>
 
       {error && <p className="text-red-500 text-center">{error}</p>}
+
+      <SearchBar
+        placeholder="Search users..."
+        dropdownItems={["All categories", "USER", "ADMIN"]}
+        onSearch={setSearchTerm}
+        onFilter={handleFilter}
+        filterTitle="Role"
+        filterItems={["USER", "ADMIN"]}
+        debounceDelay={300}
+        suggestions={users.map((user) => user.email)}
+      />
 
       <CreateUserForm onSubmit={handleCreateUser} />
 
       {users.length === 0 ? (
         <p className="text-center">No users found.</p>
       ) : (
-        <Table>
-          <TableCaption>A list of your users.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">ID</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Created At</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.id}</TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
-                <TableCell>{new Date(user.createdAt).toLocaleString()}</TableCell>
-                <TableCell>
-                  <EditUserForm user={user} onSubmit={(data) => handleEditUser(user.id, data)} />
-                  <DeleteUserDialog userId={user.id} userEmail={user.email} onDelete={handleDeleteUser} />
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <>
+          {/* Pass currentPage and perPage to UserTable */}
+          <UserTable users={users} handleEditUser={handleEditUser} handleDeleteUser={handleDeleteUser} currentPage={currentPage} perPage={perPage} />
+          <UserPagination currentPage={currentPage} totalPages={totalPages} handlePageChange={handlePageChange} />
+        </>
       )}
 
-      <Toaster /> {/* Add the Toaster component */}
+      <Toaster />
     </div>
   );
 };

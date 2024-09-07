@@ -19,9 +19,9 @@ const DeleteUserDialog = ({
   userEmail,
   onDelete,
 }: {
-  userId: number;
+  userId: string;
   userEmail: string;
-  onDelete: (userId: number) => void;
+  onDelete: (userId: string) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false); // State untuk mengontrol dialog
   const { toast } = useToast();
@@ -47,7 +47,7 @@ const DeleteUserDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="destructive" size="sm" onClick={() => setIsOpen(true)}>
+        <Button variant="destructive"  onClick={() => setIsOpen(true)}>
           Delete
         </Button>
       </DialogTrigger>

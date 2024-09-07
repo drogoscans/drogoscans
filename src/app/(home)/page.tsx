@@ -1,4 +1,4 @@
-'use client'
+// 'use client'
 import LogoutButton from "@/components/logoutButton";
 import { validateRequest } from "@/lib/auth";
 
