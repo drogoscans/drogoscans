@@ -16,15 +16,15 @@ datasource db {
 model User {
   id                   String               @id @default(uuid())
   username             String?
-  email                String?              @unique
   contactEmail         String?
+  email                String               @unique
   password             String?
   googleAuthId         String?              @unique
   role                 Role                 @default(USER)
   image                String?
   bookmarks            Bookmark[]
   viewHistories        MangaViewHistory[]
-  chapterReadHistories ChapterReadHistory[]
+  chapterReadHistories ChapterReadHistory[] // Relasi ke riwayat chapter yang dibaca
   tweets               Tweet[]
   comments             Comment[]
   notifications        Notification[]

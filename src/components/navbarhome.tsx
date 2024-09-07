@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { FaDiscord } from 'react-icons/fa';
 import { FiSearch, FiMenu } from 'react-icons/fi';
 import Sidebar from './sidebarhome'; 
-import LogoutButton from './logoutButton';
 
 const Navbar: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
