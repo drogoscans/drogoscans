@@ -14,7 +14,9 @@ datasource db {
 }
 
 model User {
-  id                   Int                  @id @default(autoincrement())
+  id                   String               @id @default(uuid())
+  username             String?
+  contactEmail         String?
   email                String               @unique
   password             String?
   googleAuthId         String?              @unique
@@ -29,11 +31,20 @@ model User {
   blogs                Blog[]
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
+  sessions             Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+
+  user User @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
 
 model Bookmark {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String
   mangaId   Int
   createdAt DateTime @default(now())
 
@@ -82,7 +93,7 @@ model MangaGenre {
 
 model MangaViewHistory {
   id       Int      @id @default(autoincrement())
-  userId   Int
+  userId   String
   mangaId  Int
   viewedAt DateTime @default(now())
 
@@ -114,7 +125,7 @@ model ChapterImages {
 
 model ChapterReadHistory {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String
   chapterId Int
   createdAt DateTime @default(now())
 
@@ -132,7 +143,7 @@ model Recommendation {
 
 model Tweet {
   id        Int       @id @default(autoincrement())
-  userId    Int
+  userId    String
   content   String
   comments  Comment[]
   createdAt DateTime  @default(now())
@@ -142,7 +153,7 @@ model Tweet {
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  userId    Int
+  userId    String
   tweetId   Int?
   blogId    Int?
   content   String
@@ -156,7 +167,7 @@ model Comment {
 
 model Blog {
   id        Int       @id @default(autoincrement())
-  userId    Int
+  userId    String
   title     String
   content   String
   image     String
@@ -169,7 +180,7 @@ model Blog {
 
 model Notification {
   id        Int              @id @default(autoincrement())
-  userId    Int
+  userId    String
   type      NotificationType
   content   String
   read      Boolean          @default(false)
