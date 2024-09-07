@@ -1,9 +1,5 @@
-
 import LogoutButton from "@/components/logoutButton";
 import { validateRequest } from "@/lib/auth";
-
-
-
 
 export default async function Home() {
   const { user } = await validateRequest();
