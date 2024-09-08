@@ -4,6 +4,7 @@ import { register } from './action';
 import { toast } from 'sonner';
 import { FcGoogle } from 'react-icons/fc';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 
 export default function Page() {
@@ -27,7 +28,7 @@ export default function Page() {
 		}
 	};
     return (
-        <div className="flex flex-col w-[400px] h-[80vh] items-center text-center justify-center text-white">
+        <div className="flex flex-col w-[400px] h-[80vh] items-center gap-2 text-center justify-center text-white">
         <h1 className="text-3xl font-bold tracking-wider">SIGN UP</h1>
         <form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-2">
             <label htmlFor="email">Email</label>
@@ -41,6 +42,9 @@ export default function Page() {
                 <FcGoogle className="w-6 h-6 mr-2" /> Login with Google
             </a>
         </form>
+        <span className="opacity-80">Already have an account? <Link href={'/signin'} className="hover:text-red-500 transition-all duration-300">
+				Sign In Here
+			</Link></span>
     </div>
     )
 }
