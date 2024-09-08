@@ -6,6 +6,7 @@ import HomeMobileNavigation from './HomeMobileNavigation';
 import { validateRequest } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import DropdownUser from './DropdownUser';
+import Sidebar from './sidebarhome'; 
 
 const Navbar: React.FC = async () => {
   const { user } = await validateRequest();
