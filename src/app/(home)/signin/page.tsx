@@ -1,85 +1,46 @@
-import { verify } from "@node-rs/argon2";
-import { cookies } from "next/headers";
-import { lucia } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { PrismaClient } from "@prisma/client";
+"use client";
 
-const prisma = new PrismaClient()
+import { useState } from "react";
+import { toast } from "sonner";
+import { login } from "./action";
+import { useRouter } from "next/navigation";
+import { FcGoogle } from "react-icons/fc";
 
-export default async function Page() {
+export default function LoginPage() {
+	const [isLoading, setIsLoading] = useState(false);
+	const router = useRouter()
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		setIsLoading(true);
+		const formData = new FormData(e.currentTarget)
+		const result = await login(formData);
+
+		setIsLoading(false);
+
+		if (result) {
+			toast.error(result.error);
+		} else {
+			toast.success('Welcome to Drogoscans');
+			router.push('/')
+		}
+	};
+
 	return (
-		<>
-			<h1>Sign in</h1>
-			<form action={login}>
+		<div className="flex flex-col w-[400px] h-[80vh] items-center text-center justify-center text-white">
+			<h1 className="text-3xl font-bold tracking-wider">SIGN IN</h1>
+			<form onSubmit={handleSubmit} className="flex w-full flex-col items-center gap-2">
 				<label htmlFor="email">Email</label>
-				<input name="email" id="email" />
-				<br />
-				<label htmlFor="password">Password</label>
-				<input type="password" name="password" id="password" />
-				<br />
-				<button>Continue</button>
+				<input name="email" id="email" className="rounded-md w-full text-black-200 px-2" placeholder="Input Your email here"/>
+				<label htmlFor="password" >Password</label>
+				<input type="password" name="password" id="password" className="rounded-md w-full text-black-200 px-2" placeholder="Input Your Password" />
+				<button type="submit" className="bg-black-200 hover:bg-red-500 p-1 transition-all duration-500 rounded-md w-full" disabled={isLoading}>
+					{isLoading ? "Loading..." : "Login"}
+				</button>
+				<a href="/auth/google" className="bg-black-200 flex justify-center items-center hover:bg-red-500 p-1 transition-all duration-500 rounded-md w-full">
+					<FcGoogle className="w-6 h-6 mr-2" /> Login with Google
+				</a>
 			</form>
-            <a href="/auth/google">Login With Google</a>
-		</>
+		</div>
 	);
-}
-
-async function login(formData: FormData): Promise<ActionResult> {
-    "use server";
-	const email = formData.get("email") as string
-	// if (
-	// 	typeof username !== "string" ||
-	// 	username.length < 3 ||
-	// 	username.length > 31 ||
-	// 	!/^[a-z0-9_-]+$/.test(username)
-	// ) {
-	// 	return {
-	// 		error: "Invalid username"
-	// 	};
-	// }
-	const password = formData.get("password") as string
-	// if (typeof password !== "string" || password.length < 6 || password.length > 255) {
-	// 	return {
-	// 		error: "Invalid password"
-	// 	};
-	// }
-
-    const existingUser = await prisma.user.findUnique({
-        where: { email }
-    })
-	if (!existingUser) {
-		// NOTE:
-		// Returning immediately allows malicious actors to figure out valid usernames from response times,
-		// allowing them to only focus on guessing passwords in brute-force attacks.
-		// As a preventive measure, you may want to hash passwords even for invalid usernames.
-		// However, valid usernames can be already be revealed with the signup page among other methods.
-		// It will also be much more resource intensive.
-		// Since protecting against this is non-trivial,
-		// it is crucial your implementation is protected against brute-force attacks with login throttling etc.
-		// If usernames are public, you may outright tell the user that the username is invalid.
-		return {
-			error: "Incorrect email or password"
-		};
-	}
-
-	// const validPassword = await verify(existingUser.password!, password, {
-	// 	memoryCost: 19456,
-	// 	timeCost: 2,
-	// 	outputLen: 32,
-	// 	parallelism: 1
-	// });
-	// if (!validPassword) {
-	// 	return {
-	// 		error: "Incorrect username or password"
-	// 	};
-	// }
-
-	const session = await lucia.createSession(existingUser.id, {});
-	const sessionCookie = lucia.createSessionCookie(session.id);
-	cookies().set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
-	return redirect("/");
-}
-
-interface ActionResult {
-	error: string;
 }

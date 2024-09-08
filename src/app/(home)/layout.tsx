@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import Navbar from "@/components/navbarhome";
-
+import Navbar from "@/components/navbar/navbarhome";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +28,7 @@ export default function RootLayout({
         <main className="flex flex-col items-center justify-start py-4 px-6">
           {children}
         </main>
+        <Toaster  position="top-center" richColors/>
       </body>
     </html>
   );

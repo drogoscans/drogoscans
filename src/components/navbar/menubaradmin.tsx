@@ -15,8 +15,7 @@ const MenuBar: React.FC = () => {
             <Image
               src="/logo.png"
               alt="logo"
-              layout="fill"
-              objectFit="contain"
+              fill style={{ objectFit: 'contain' }}
             />
           </div>
           <span className="text-[#ed1c24] text-2xl font-extrabold tracking-tight" style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif' }}>

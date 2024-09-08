@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "../globals.css";
-import NavbarAdmin from "@/components/navbaradmin";
-import MenuBar from "@/components/menubaradmin";
-
-
+import NavbarAdmin from "@/components/navbar/navbaradmin";
+import MenuBar from "@/components/navbar/menubaradmin";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +17,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  
   return (
     <html lang="en">
       <body className={`bg-[#0f1431] min-h-screen antialiased ${inter.className}`}>
@@ -37,6 +38,7 @@ export default function RootLayout({
           <main className="flex-1 p-6 lg:ml-64 text-white"> {/* Offset main content for sidebar */}
             {children}
           </main>
+        <Toaster />
         </div>
       </body>
     </html>

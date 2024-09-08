@@ -1,17 +1,15 @@
-"use client"
-import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { FaDiscord } from 'react-icons/fa';
-import { FiSearch, FiMenu } from 'react-icons/fi';
-import Sidebar from './sidebarhome'; 
+import { FaDiscord, FaRegUser } from 'react-icons/fa';
+import { FiSearch } from 'react-icons/fi';
+import HomeMobileNavigation from './HomeMobileNavigation';
+import { validateRequest } from '@/lib/auth';
+import { redirect } from 'next/navigation';
+import DropdownUser from './DropdownUser';
 
-const Navbar: React.FC = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+const Navbar: React.FC = async () => {
+  const { user } = await validateRequest();
+  if (user?.role === 'ADMIN') redirect('/admin/users')
 
   return (
     <nav className="flex justify-center items-center py-2 px-4 bg-[#000319] shadow-md">
@@ -21,7 +19,7 @@ const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2 hover:text-[#ed1c24] transition duration-300 cursor-pointer group"> {/* Group for combined hover effects */}
             {/* Logo */}
             <div className="relative w-12 h-12 group-hover:scale-125 transform transition-transform duration-300"> {/* Added animation effects */}
-              <Image src="/logo2.png" alt="logo" layout="fill" objectFit="contain" />
+              <Image src="/logo2.png" alt="logo" style={{ objectFit: 'contain' }} width={40} height={40} priority />
             </div>
             {/* Brand Name */}
             <span className="text-[#ed1c24] text-2xl font-extrabold tracking-tight hidden lg:block group-hover:text-white transition-colors duration-300" style={{ fontFamily: 'Impact, Haettenschweiler, Arial Narrow Bold, sans-serif' }}>
@@ -29,7 +27,7 @@ const Navbar: React.FC = () => {
             </span>
           </div>
         </Link>
-        
+
         {/* Navigation Links - Hidden on Small Screens */}
         <ul className="hidden md:flex space-x-6">
           <li>
@@ -67,21 +65,17 @@ const Navbar: React.FC = () => {
           <Link href="https://discord.com" passHref target="_blank" rel="noopener noreferrer">
             <FaDiscord className="text-white text-2xl hover:text-red-500 transition duration-300" />
           </Link>
-          <div className="relative w-8 h-8 md:w-10 md:h-10">
-            <Image
-              src="/profile.png"
-              alt="Profile"
-              layout="fill"
-              className="rounded-full cursor-pointer"
-              objectFit="cover"
-            />
-          </div>
-          <button onClick={toggleSidebar} className="md:hidden">
-            <FiMenu className="text-white text-2xl" />
-          </button>
+
+          {user ? (
+            <DropdownUser />
+          ) : (
+            <Link href={'/signin'}>
+              <FaRegUser size={22} className='text-white text-2xl hover:text-red-500 transition duration-300 border-0' />
+            </Link>
+          )}
+          <HomeMobileNavigation />
         </div>
       </div>
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
     </nav>
   );
 };

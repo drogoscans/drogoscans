@@ -1,7 +1,5 @@
-
-import { cookies } from "next/headers";
+import { cookies } from "next/headers"
 import { OAuth2RequestError } from "arctic";
-import { generateId } from "lucia";
 import { google, lucia } from "@/lib/auth";
 import { PrismaClient } from "@prisma/client";
 
