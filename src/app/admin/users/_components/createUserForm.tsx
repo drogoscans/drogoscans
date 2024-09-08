@@ -22,10 +22,11 @@ enum Role {
 const CreateUserForm = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
   const [formData, setFormData] = useState({
     email: "",
+    username: "",
     role: Role.USER,
     password: "",
   });
-  const [isOpen, setIsOpen] = useState(false); // State untuk mengontrol dialog
+  const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -37,9 +38,19 @@ const CreateUserForm = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.email && !formData.username) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please provide either an email or a username.",
+      });
+      return;
+    }
+
     try {
       await onSubmit(formData);
-      setIsOpen(false); // Tutup dialog setelah berhasil
+      setIsOpen(false);
       toast({
         variant: "default",
         title: "Success",
@@ -78,7 +89,17 @@ const CreateUserForm = ({ onSubmit }: { onSubmit: (data: any) => void }) => {
               onChange={handleChange}
               className="input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="Enter user's email"
-              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="input w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              placeholder="Enter username"
             />
           </div>
           <div>
