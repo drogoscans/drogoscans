@@ -17,7 +17,7 @@ model User {
   id                   String               @id @default(uuid())
   username             String?
   contactEmail         String?
-  email                String               @unique
+  email                String?               @unique
   password             String?
   googleAuthId         String?              @unique
   role                 Role                 @default(USER)

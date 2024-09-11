@@ -14,12 +14,10 @@ export interface UserData {
 
 // Define a User type for frontend use
 export type User = {
-  id: string;
-  email: string;
-  username: string; // No longer nullable, defaults to empty string if not provided
-  contactEmail: string; // No longer nullable, defaults to empty string if not provided
-  password: string; // No longer nullable, defaults to empty string if not provided
+  id : string
+  username: string | null;
+  contactEmail: string | null;  
+  email: string | null;
   role: Role;
   createdAt: Date;
-  updatedAt: Date;
 };

@@ -6,7 +6,7 @@ import React from 'react'
 export default function LogoutButton() {
     return (
         <form action={logout}>
-            <button>Sign out</button>
+            <button className='text-white'>Sign out</button>
         </form>
     )
 }

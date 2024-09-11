@@ -20,7 +20,7 @@ const DeleteUserDialog = ({
   onDelete,
 }: {
   userId: string;
-  userEmail: string;
+  userEmail: string | "";
   onDelete: (userId: string) => void;
 }) => {
   const [isOpen, setIsOpen] = useState(false); // State untuk mengontrol dialog
